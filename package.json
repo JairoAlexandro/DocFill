@@ -1,0 +1,76 @@
+{
+  "name": "docfill",
+  "productName": "DocFill",
+  "version": "0.1.0",
+  "description": "Detecta los datos repetidos de tus documentos y te deja escribirlos una sola vez.",
+  "private": true,
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "ejemplo": "node scripts/crear-ejemplo.mjs",
+    "escritorio": "vite build && electron .",
+    "escritorio:instalador": "vite build && electron-builder --win",
+    "version:parche": "npm version patch --no-git-tag-version",
+    "version:menor": "npm version minor --no-git-tag-version",
+    "version:mayor": "npm version major --no-git-tag-version",
+    "escritorio:publicar": "node scripts/comprobar-version.mjs && vite build && electron-builder --win --publish always"
+  },
+  "dependencies": {
+    "electron-updater": "6.8.9"
+  },
+  "devDependencies": {
+    "@tesseract.js-data/spa": "1.0.0",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "@vitejs/plugin-react": "4.3.4",
+    "electron": "33.2.1",
+    "electron-builder": "25.1.8",
+    "jsdom": "25.0.1",
+    "jszip": "3.10.1",
+    "pdf-lib": "1.17.1",
+    "pdfjs-dist": "4.10.38",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "tesseract.js": "7.0.0",
+    "typescript": "5.6.3",
+    "vite": "5.4.11",
+    "vitest": "2.1.8"
+  },
+  "build": {
+    "appId": "com.docfill.app",
+    "productName": "DocFill",
+    "files": [
+      "dist/**",
+      "electron/**",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "DocFill",
+      "artifactName": "DocFill-Setup.${ext}"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "JairoAlexandro",
+        "repo": "DocFill",
+        "releaseType": "release"
+      }
+    ]
+  },
+  "license": "UNLICENSED",
+  "author": "Jairo Alexandro Saborito Franco"
+}

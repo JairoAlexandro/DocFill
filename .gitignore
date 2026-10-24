@@ -1,0 +1,22 @@
+node_modules/
+dist/
+release/
+coverage/
+*.log
+
+# Secretos: nunca subir
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+secrets*.json
+
+# Ficheros del OCR copiados desde node_modules (scripts/copiar-ocr.mjs)
+public/ocr/
+public/pdfjs/
+
+node_modules/
