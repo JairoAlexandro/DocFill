@@ -38,9 +38,12 @@ export function publishedRelease(): Promise<PublishedRelease | null> {
   releaseCheck ??= fetch(__RELEASES_API__, { headers: { Accept: 'application/vnd.github+json' } })
     .then(async (res) => {
       if (!res.ok) return null;
-      const data = (await res.json()) as { tag_name?: string; assets?: { name: string }[] };
-      const hasInstaller = data.assets?.some((a) => a.name === 'DocFill-Setup.exe');
-      return hasInstaller ? { version: String(data.tag_name ?? '').replace(/^v/, ''), url: DOWNLOAD_URL! } : null;
+      // Lista de versiones (vacía si aún no se ha publicado ninguna): se toma la más reciente que sea definitiva.
+      type Release = { tag_name?: string; draft?: boolean; prerelease?: boolean; assets?: { name: string }[] };
+      const list = (await res.json()) as Release[];
+      const latest = Array.isArray(list) ? list.find((r) => !r.draft && !r.prerelease) : undefined;
+      const hasInstaller = latest?.assets?.some((a) => a.name === 'DocFill-Setup.exe');
+      return hasInstaller ? { version: String(latest!.tag_name ?? '').replace(/^v/, ''), url: DOWNLOAD_URL! } : null;
     })
     .catch(() => null);
   return releaseCheck;
