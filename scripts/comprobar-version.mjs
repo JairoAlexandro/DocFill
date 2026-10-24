@@ -26,6 +26,17 @@ const isNewer = (a, b) => {
   return false;
 };
 
+// Solo se publica desde main: es la rama de producción (lo revisado). Se lee .git/HEAD sin ejecutar git.
+try {
+  const head = (await readFile(join(root, '.git', 'HEAD'), 'utf8')).trim();
+  const branch = head.startsWith('ref: refs/heads/') ? head.slice('ref: refs/heads/'.length) : '(sin rama)';
+  if (branch !== 'main') {
+    fail(`Estás en la rama «${branch}». Las versiones del programa solo se publican desde «main» (producción).\nUne antes tus cambios: develop → main.`);
+  }
+} catch {
+  /* sin carpeta .git: no se comprueba la rama */
+}
+
 if (!publish?.owner || String(publish.owner).startsWith('CAMBIA')) {
   fail('Configura el repositorio de GitHub en package.json → build.publish (owner y repo).');
 }
