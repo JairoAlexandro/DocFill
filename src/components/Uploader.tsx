@@ -2,8 +2,7 @@ import { useRef, useState } from 'react';
 import { errMsg } from '../storage';
 import { useI18n } from '../i18n';
 import { ACCEPT } from '../core/formats';
-import { DOWNLOAD_URL, desktop } from '../desktop';
-import { DownloadAppButton } from './custom';
+import { DownloadAppButton, useReleaseAvailable } from './custom';
 
 interface Props {
   busy: boolean;
@@ -15,6 +14,7 @@ interface Props {
 
 export function Uploader({ busy, progress, onFile, notify }: Props) {
   const { t } = useI18n();
+  const release = useReleaseAvailable();
   const [drag, setDrag] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
@@ -89,10 +89,10 @@ export function Uploader({ busy, progress, onFile, notify }: Props) {
         ))}
       </ol>
       <p className="privacy">{t('upload.privacy')}</p>
-      {DOWNLOAD_URL && !desktop() && (
+      {release && (
         <div className="get-app">
           <span className="muted">{t('app.getDesktop')}</span>
-          <DownloadAppButton compact />
+          <DownloadAppButton compact release={release} />
         </div>
       )}
     </div>

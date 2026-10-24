@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { LANGS, useI18n, type Lang } from '../i18n';
 import type { ThemePref } from '../theme';
 import { canInstall, isInstalled, onInstallChange, promptInstall } from '../pwa';
-import { APP_VERSION, DOWNLOAD_URL, desktop } from '../desktop';
-import { DownloadAppButton, Select } from './custom';
+import { APP_VERSION, desktop } from '../desktop';
+import { DownloadAppButton, Select, useReleaseAvailable } from './custom';
 import {
   downloadBlob,
   errMsg,
@@ -36,6 +36,7 @@ export function SettingsView({ data, theme, setTheme, refresh, notify }: Props) 
   const [password, setPassword] = useState('');
   const [installable, setInstallable] = useState(canInstall);
   const [version, setVersion] = useState(APP_VERSION);
+  const release = useReleaseAvailable();
   const [checking, setChecking] = useState(false);
   useEffect(() => {
     desktop()?.getVersion().then(setVersion).catch(() => undefined);
@@ -118,11 +119,11 @@ export function SettingsView({ data, theme, setTheme, refresh, notify }: Props) 
               {checking ? t('settings.checking') : t('settings.checkUpdates')}
             </button>
           </div>
-        ) : DOWNLOAD_URL ? (
+        ) : release ? (
           <>
             <p className="muted">{t('settings.desktopIntro')}</p>
             <div className="settings-row">
-              <DownloadAppButton compact />
+              <DownloadAppButton compact release={release} />
             </div>
           </>
         ) : (

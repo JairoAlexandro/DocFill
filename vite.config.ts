@@ -11,6 +11,8 @@ const publish = pkg.build?.publish?.[0];
 const configured = !!publish?.owner && !publish.owner.startsWith('CAMBIA');
 // Siempre apunta al instalador de la última versión publicada en GitHub Releases.
 const downloadUrl = configured ? `https://github.com/${publish!.owner}/${publish!.repo}/releases/latest/download/DocFill-Setup.exe` : null;
+// Para comprobar desde la web si ya hay alguna versión publicada (si no, no se muestra el botón de descarga).
+const releasesApi = configured ? `https://api.github.com/repos/${publish!.owner}/${publish!.repo}/releases/latest` : null;
 
 export default defineConfig({
   // Rutas relativas para que la build funcione también dentro de la app de escritorio.
@@ -20,6 +22,7 @@ export default defineConfig({
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
     __DOWNLOAD_URL__: JSON.stringify(downloadUrl),
+    __RELEASES_API__: JSON.stringify(releasesApi),
   },
   test: {
     environment: 'jsdom',
