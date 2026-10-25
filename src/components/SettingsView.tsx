@@ -3,6 +3,7 @@ import { LANGS, useI18n, type Lang } from '../i18n';
 import type { ThemePref } from '../theme';
 import { canInstall, isInstalled, onInstallChange, promptInstall } from '../pwa';
 import { APP_VERSION, desktop } from '../desktop';
+import { DESKTOP_DOWNLOAD_ENABLED } from '../config';
 import { DownloadAppButton, Select, useReleaseAvailable } from './custom';
 import {
   downloadBlob,
@@ -126,9 +127,9 @@ export function SettingsView({ data, theme, setTheme, refresh, notify }: Props) 
               <DownloadAppButton compact release={release} />
             </div>
           </>
-        ) : (
+        ) : DESKTOP_DOWNLOAD_ENABLED ? (
           <p className="muted small-text">{t('settings.desktopSoon')}</p>
-        )}
+        ) : null}
       </div>
 
       {!desktop() && (
