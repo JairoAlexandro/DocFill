@@ -278,6 +278,91 @@ select:focus {
   overflow-y: auto;
 }
 
+/* En pantallas anchas el menú no existe como caja: pestañas y controles van en la barra. */
+.main-menu {
+  display: contents;
+}
+
+.menu-toggle,
+.menu-backdrop {
+  display: none;
+}
+
+/* ---------- Móvil: menú hamburguesa ---------- */
+
+@media (max-width: 760px) {
+  .topbar {
+    flex-wrap: nowrap;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    margin-left: auto;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .main-menu {
+    display: none;
+  }
+
+  .main-menu.open {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 0.75rem 1rem 1rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+    max-height: calc(100dvh - 3.5rem);
+    overflow-y: auto;
+  }
+
+  .main-menu .tabs {
+    flex-direction: column;
+    gap: 0.15rem;
+    overflow: visible;
+  }
+
+  .main-menu .tabs button {
+    text-align: left;
+    padding: 0.75rem 0.9rem;
+    font-size: 1rem;
+  }
+
+  .main-menu .top-controls {
+    margin-left: 0;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .main-menu .top-controls .select {
+    flex: 1;
+    width: auto;
+  }
+
+  /* Con menos de 16px, Safari del iPhone amplía la página al tocar un campo. */
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+
+  .menu-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 4;
+    background: rgba(0, 0, 0, 0.35);
+  }
+}
+
 /* ---------- Botones ---------- */
 
 .btn {

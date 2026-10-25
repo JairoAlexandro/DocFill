@@ -1,3 +1,5 @@
+import { DESKTOP_DOWNLOAD_ENABLED } from './config';
+
 /** Funciones que solo existen en la app de escritorio (las expone electron/preload.cjs). */
 interface DesktopBridge {
   canConvertToPdf: () => Promise<boolean>;
@@ -34,7 +36,7 @@ let releaseCheck: Promise<PublishedRelease | null> | null = null;
  * Así el botón «Descargar para Windows» no aparece mientras el enlace daría error.
  */
 export function publishedRelease(): Promise<PublishedRelease | null> {
-  if (!__RELEASES_API__ || !DOWNLOAD_URL || desktop()) return Promise.resolve(null);
+  if (!DESKTOP_DOWNLOAD_ENABLED || !__RELEASES_API__ || !DOWNLOAD_URL || desktop()) return Promise.resolve(null);
   releaseCheck ??= fetch(__RELEASES_API__, { headers: { Accept: 'application/vnd.github+json' } })
     .then(async (res) => {
       if (!res.ok) return null;

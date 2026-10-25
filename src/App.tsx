@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { formatOf, readDocument } from './core/formats';
 import { detectVariables } from './core/detect';
 import { applyFields } from './core/variables';
@@ -13,7 +13,7 @@ import { LearningView } from './components/LearningView';
 import { HistoryView } from './components/HistoryView';
 import { SettingsView } from './components/SettingsView';
 import { onLaunchFiles } from './pwa';
-import { Select } from './components/custom';
+import { Select, useDismiss } from './components/custom';
 
 type View = 'documento' | 'plantillas' | 'fichas' | 'aprendizaje' | 'historial' | 'ajustes';
 
@@ -38,6 +38,10 @@ export default function App() {
   const [toast, setToast] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState<number | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const header = useRef<HTMLElement>(null);
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+  useDismiss(menuOpen, header, closeMenu);
 
   const notify = useCallback((msg: string) => setToast(msg), []);
   useEffect(() => {
@@ -123,7 +127,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <header className="topbar">
+      <header className="topbar" ref={header}>
         <div className="brand">
           <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
             <path d="M6 2h8l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="currentColor" opacity=".18" />
@@ -131,25 +135,46 @@ export default function App() {
           </svg>
           DocFill
         </div>
-        <nav className="tabs">
-          {TABS.map((tab) => (
-            <button key={tab.id} className={view === tab.id ? 'active' : ''} onClick={() => setView(tab.id)}>
-              {t(tab.key)}
+        {/* En el móvil las pestañas, el idioma y el tema van dentro del menú hamburguesa. */}
+        <button
+          className="icon-btn menu-toggle"
+          aria-label={t('nav.menu')}
+          aria-expanded={menuOpen}
+          aria-controls="main-menu"
+          onClick={() => setMenuOpen((o) => !o)}
+        >
+          <MenuIcon open={menuOpen} />
+        </button>
+        <div id="main-menu" className={`main-menu${menuOpen ? ' open' : ''}`}>
+          <nav className="tabs">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                className={view === tab.id ? 'active' : ''}
+                aria-current={view === tab.id ? 'page' : undefined}
+                onClick={() => {
+                  setView(tab.id);
+                  setMenuOpen(false);
+                }}
+              >
+                {t(tab.key)}
+              </button>
+            ))}
+          </nav>
+          <div className="top-controls">
+            <Select<Lang> small ariaLabel={t('lang.label')} value={lang} onChange={setLang} options={LANGS.map((l) => ({ value: l.id, label: l.name }))} />
+            <button
+              className="icon-btn"
+              onClick={() => setTheme(NEXT_THEME[theme])}
+              title={`${t('theme.label')}: ${t(`theme.${theme}`)}`}
+              aria-label={`${t('theme.label')}: ${t(`theme.${theme}`)}`}
+            >
+              <ThemeIcon pref={theme} />
             </button>
-          ))}
-        </nav>
-        <div className="top-controls">
-          <Select<Lang> small ariaLabel={t('lang.label')} value={lang} onChange={setLang} options={LANGS.map((l) => ({ value: l.id, label: l.name }))} />
-          <button
-            className="icon-btn"
-            onClick={() => setTheme(NEXT_THEME[theme])}
-            title={`${t('theme.label')}: ${t(`theme.${theme}`)}`}
-            aria-label={`${t('theme.label')}: ${t(`theme.${theme}`)}`}
-          >
-            <ThemeIcon pref={theme} />
-          </button>
+          </div>
         </div>
       </header>
+      {menuOpen && <div className="menu-backdrop" aria-hidden="true" />}
 
       <main className="content">
         {view === 'documento' &&
@@ -181,6 +206,14 @@ export default function App() {
         </div>
       )}
     </div>
+  );
+}
+
+function MenuIcon({ open }: { open: boolean }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+      {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+    </svg>
   );
 }
 
